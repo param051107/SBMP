@@ -44,8 +44,8 @@ const Admin = () => {
     return () => unsubscribe();
   }, []);
 
-  const togglePaymentStatus = async (userId, currentStatus, userName) => {
-    const action = currentStatus ? "unpaid" : "paid (cash)";
+  const togglePaymentStatus = async (userId, currentStatus, userName, method = "cash") => {
+    const action = currentStatus ? "unpaid" : `paid (${method})`;
     if (!window.confirm(`Are you sure you want to mark ${userName} as ${action}?`)) {
       return;
     }
@@ -57,8 +57,10 @@ const Admin = () => {
       const updateData = { isPaid: !currentStatus };
       if (!currentStatus) {
         updateData.markedPaidBy = currentAdmin;
+        updateData.paymentMethod = method;
       } else {
         updateData.markedPaidBy = null;
+        updateData.paymentMethod = null;
       }
       
       await updateDoc(userRef, updateData);
@@ -189,7 +191,7 @@ const Admin = () => {
                       <td>{user.year}</td>
                       <td>
                         {user.isPaid ? (
-                          <span className="badge badge-success"><CheckCircle size={12} style={{ display: 'inline', marginRight: '4px' }} /> Paid</span>
+                          <span className="badge badge-success"><CheckCircle size={12} style={{ display: 'inline', marginRight: '4px' }} /> Paid {user.paymentMethod ? `(${user.paymentMethod})` : ''}</span>
                         ) : (
                           <span className="badge badge-warning"><XCircle size={12} style={{ display: 'inline', marginRight: '4px' }} /> Unpaid</span>
                         )}
@@ -199,25 +201,68 @@ const Admin = () => {
                       </td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                          <button 
-                            className="btn" 
-                            style={{ 
-                              padding: '0.5rem 1rem', 
-                              fontSize: '0.85rem', 
-                              background: user.isPaid ? 'rgba(239, 68, 68, 0.1)' : 'var(--primary)',
-                              color: user.isPaid ? '#ef4444' : 'white',
-                              border: user.isPaid ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid transparent',
-                              whiteSpace: 'nowrap',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '36px',
-                              width: '140px'
-                            }}
-                            onClick={() => togglePaymentStatus(user.id, user.isPaid, user.name)}
-                          >
-                            {user.isPaid ? 'Mark Unpaid' : 'Mark Paid (Cash)'}
-                          </button>
+                          {user.isPaid ? (
+                            <button 
+                              className="btn" 
+                              style={{ 
+                                padding: '0.5rem 1rem', 
+                                fontSize: '0.85rem', 
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                color: '#ef4444',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                whiteSpace: 'nowrap',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '36px',
+                                flex: 1
+                              }}
+                              onClick={() => togglePaymentStatus(user.id, true, user.name)}
+                            >
+                              Mark Unpaid
+                            </button>
+                          ) : (
+                            <>
+                              <button 
+                                className="btn" 
+                                style={{ 
+                                  padding: '0.5rem 0.5rem', 
+                                  fontSize: '0.75rem', 
+                                  background: 'var(--primary)',
+                                  color: 'white',
+                                  border: '1px solid transparent',
+                                  whiteSpace: 'nowrap',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '36px',
+                                  flex: 1
+                                }}
+                                onClick={() => togglePaymentStatus(user.id, false, user.name, 'cash')}
+                              >
+                                Cash
+                              </button>
+                              <button 
+                                className="btn" 
+                                style={{ 
+                                  padding: '0.5rem 0.5rem', 
+                                  fontSize: '0.75rem', 
+                                  background: '#10b981',
+                                  color: 'white',
+                                  border: '1px solid transparent',
+                                  whiteSpace: 'nowrap',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '36px',
+                                  flex: 1
+                                }}
+                                onClick={() => togglePaymentStatus(user.id, false, user.name, 'online')}
+                              >
+                                Online
+                              </button>
+                            </>
+                          )}
                           <button 
                             className="btn" 
                             style={{ 
