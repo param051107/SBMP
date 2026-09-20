@@ -18,14 +18,8 @@ const Welcome = () => {
               And College of Engineering
             </div>
           </div>
-          
-
-          <div className="hidden-mobile">
-            <button className="v3-btn-gradient" onClick={() => navigate('/register')} style={{ padding: '0.5rem 1.5rem' }}>
-              Register Now
-            </button>
-          </div>
         </nav>
+
 
         {/* Main Hero Section */}
         <div className="v3-hero">
