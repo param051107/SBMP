@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Search, CheckCircle, XCircle, Trash2, LogOut } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Trash2, LogOut, Home, Users, CreditCard, Clock, Settings, UserCircle, MoreVertical } from 'lucide-react';
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -64,11 +64,6 @@ const Admin = () => {
       }
       
       await updateDoc(userRef, updateData);
-      
-      // Update local state to reflect change instantly
-      setUsers(users.map(user => 
-        user.id === userId ? { ...user, ...updateData } : user
-      ));
     } catch (error) {
       console.error("Error updating payment status:", error);
       alert("Failed to update status.");
@@ -82,7 +77,6 @@ const Admin = () => {
     
     try {
       await deleteDoc(doc(db, "registrations", userId));
-      setUsers(users.filter(user => user.id !== userId));
     } catch (error) {
       console.error("Error deleting user:", error);
       alert("Failed to delete registration.");
@@ -98,198 +92,201 @@ const Admin = () => {
     );
   });
 
-  if (!isAuthenticated) {
-    return null; // Prevent rendering anything if not logged in
-  }
+  if (!isAuthenticated) return null;
+
+  const totalUsers = users.length;
+  const paidUsers = users.filter(u => u.isPaid).length;
+  const unpaidUsers = users.filter(u => !u.isPaid).length;
+  const revenue = paidUsers * 500; // Assuming 500 per ticket
 
   return (
-    <div className="container animate-fade-in" style={{ maxWidth: '1000px', padding: '2rem 1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h1 className="title-gradient" style={{ fontSize: '2.5rem', margin: 0 }}>Admin Dashboard</h1>
-          <button 
-            onClick={handleLogout}
-            style={{ 
-              background: 'rgba(239, 68, 68, 0.1)', 
-              border: '1px solid rgba(239, 68, 68, 0.3)', 
-              color: '#ef4444', 
-              padding: '0.5rem 1rem', 
-              borderRadius: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '0.9rem'
-            }}
-          >
-            <LogOut size={16} /> Logout
-          </button>
+    <div className="dashboard-layout animate-fade-in">
+      
+      {/* Sidebar */}
+      <div className="dashboard-sidebar">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', padding: '0 0.5rem' }}>
+          <img src="/svkm-logo.png" alt="SVKM" style={{ height: '40px', background: 'white', borderRadius: '50%', padding: '2px' }} />
+          <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Garba Night <span style={{ color: '#FCD34D' }}>2026</span></h2>
         </div>
         
-        {/* Search Bar */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '350px' }}>
-          <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-          <input 
-            type="text" 
-            className="glass-input" 
-            placeholder="Search by Name, SAP ID, Branch..." 
-            style={{ paddingLeft: '3rem' }}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <ul className="sidebar-menu">
+          <li className="active"><Home size={20} /> Dashboard</li>
+          <li><Users size={20} /> Registrations</li>
+          <li><CreditCard size={20} /> Paid Users</li>
+          <li><Clock size={20} /> Unpaid Users</li>
+          <li><Search size={20} /> Search</li>
+        </ul>
+        
+        <div style={{ marginTop: 'auto' }}>
+          <hr style={{ borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: 'none', margin: '1rem 0' }} />
+          <ul className="sidebar-menu" style={{ marginTop: 0 }}>
+            <li><Settings size={20} /> Settings</li>
+            <li onClick={handleLogout} style={{ color: '#ef4444' }}><LogOut size={20} /> Logout</li>
+          </ul>
         </div>
       </div>
 
-      {/* Summary Statistics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <div className="glass-card" style={{ padding: '1.5rem', textAlign: 'center', borderLeft: '4px solid var(--accent)' }}>
-          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Total Registrations</p>
-          <h2 style={{ fontSize: '2.5rem', margin: 0 }}>{users.length}</h2>
-        </div>
-        <div className="glass-card" style={{ padding: '1.5rem', textAlign: 'center', borderLeft: '4px solid #10b981' }}>
-          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Paid Users</p>
-          <h2 style={{ fontSize: '2.5rem', margin: 0, color: '#34d399' }}>{users.filter(u => u.isPaid).length}</h2>
-        </div>
-        <div className="glass-card" style={{ padding: '1.5rem', textAlign: 'center', borderLeft: '4px solid #f59e0b' }}>
-          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Unpaid Users</p>
-          <h2 style={{ fontSize: '2.5rem', margin: 0, color: '#fbbf24' }}>{users.filter(u => !u.isPaid).length}</h2>
-        </div>
-      </div>
-
-      <div className="glass-panel" style={{ padding: '1rem', overflow: 'hidden' }}>
-        {loading ? (
-          <div className="animate-pulse" style={{ padding: '2rem', textAlign: 'center', color: 'var(--accent)' }}>
-            Loading registrations...
+      {/* Main Content */}
+      <div className="dashboard-main">
+        
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h1 style={{ fontSize: '1.8rem', color: 'var(--navy-dark)', marginBottom: '0.2rem' }}>Welcome, {currentAdmin}! 👋</h1>
+            <p style={{ color: 'var(--text-muted)' }}>Here's what's happening with Garba Night 2026</p>
           </div>
-        ) : (
-          <div className="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>SAP ID</th>
-                  <th>Name</th>
-                  <th>Branch</th>
-                  <th>Year</th>
-                  <th>Payment Status</th>
-                  <th>Marked By</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.length === 0 ? (
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            <div className="input-wrapper" style={{ width: '300px' }}>
+              <Search size={18} className="input-icon" />
+              <input 
+                type="text" 
+                className="glass-input" 
+                placeholder="Search by Name, SAP ID, Branch..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ borderRadius: '9999px', padding: '0.6rem 1rem 0.6rem 2.5rem' }}
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                {currentAdmin ? currentAdmin.charAt(0).toUpperCase() : 'A'}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>{currentAdmin}</span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>SVKM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+          <div className="stats-card">
+            <div style={{ background: '#DBEAFE', padding: '1rem', borderRadius: '12px', color: '#2563EB' }}><Users size={24} /></div>
+            <div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Total Registrations</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--navy-dark)' }}>{totalUsers}</div>
+            </div>
+          </div>
+          <div className="stats-card">
+            <div style={{ background: '#D1FAE5', padding: '1rem', borderRadius: '12px', color: '#059669' }}><CreditCard size={24} /></div>
+            <div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Paid Users</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--navy-dark)' }}>{paidUsers}</div>
+            </div>
+          </div>
+          <div className="stats-card">
+            <div style={{ background: '#FEF3C7', padding: '1rem', borderRadius: '12px', color: '#D97706' }}><Clock size={24} /></div>
+            <div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Unpaid Users</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--navy-dark)' }}>{unpaidUsers}</div>
+            </div>
+          </div>
+          <div className="stats-card">
+            <div style={{ background: '#F3E8FF', padding: '1rem', borderRadius: '12px', color: '#9333EA' }}><span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>₹</span></div>
+            <div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Revenue Collected</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--navy-dark)' }}>₹{revenue}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Table Area */}
+        <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--navy-dark)' }}><Users size={18} /> Recent Registrations</h3>
+            <button className="btn btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}>+ Add User</button>
+          </div>
+          
+          {loading ? (
+             <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>Loading registrations...</div>
+          ) : (
+            <div className="table-container" style={{ border: 'none' }}>
+              <table>
+                <thead>
                   <tr>
-                    <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                      No registrations found.
-                    </td>
+                    <th>SAP ID</th>
+                    <th>Name</th>
+                    <th>Branch</th>
+                    <th>Year</th>
+                    <th>Payment Status</th>
+                    <th>Marked By</th>
+                    <th style={{ textAlign: 'center' }}>Action</th>
+                    <th></th>
                   </tr>
-                ) : (
-                  filteredUsers.map(user => (
-                    <tr key={user.id}>
-                      <td style={{ fontFamily: 'var(--mono)' }}>{user.sapId}</td>
-                      <td style={{ fontWeight: '500' }}>{user.name}</td>
-                      <td>{user.branch}</td>
-                      <td>{user.year}</td>
-                      <td>
-                        {user.isPaid ? (
-                          <span className="badge badge-success"><CheckCircle size={12} style={{ display: 'inline', marginRight: '4px' }} /> Paid {user.paymentMethod ? `(${user.paymentMethod})` : ''}</span>
-                        ) : (
-                          <span className="badge badge-warning"><XCircle size={12} style={{ display: 'inline', marginRight: '4px' }} /> Unpaid</span>
-                        )}
-                      </td>
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                        {user.isPaid && user.markedPaidBy ? user.markedPaidBy : '-'}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                          {user.isPaid ? (
-                            <button 
-                              className="btn" 
-                              style={{ 
-                                padding: '0.5rem 1rem', 
-                                fontSize: '0.85rem', 
-                                background: 'rgba(239, 68, 68, 0.1)',
-                                color: '#ef4444',
-                                border: '1px solid rgba(239, 68, 68, 0.3)',
-                                whiteSpace: 'nowrap',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                height: '36px',
-                                flex: 1
-                              }}
-                              onClick={() => togglePaymentStatus(user.id, true, user.name)}
-                            >
-                              Mark Unpaid
-                            </button>
-                          ) : (
-                            <>
-                              <button 
-                                className="btn" 
-                                style={{ 
-                                  padding: '0.5rem 0.5rem', 
-                                  fontSize: '0.75rem', 
-                                  background: 'var(--primary)',
-                                  color: 'white',
-                                  border: '1px solid transparent',
-                                  whiteSpace: 'nowrap',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  height: '36px',
-                                  flex: 1
-                                }}
-                                onClick={() => togglePaymentStatus(user.id, false, user.name, 'cash')}
-                              >
-                                Cash
-                              </button>
-                              <button 
-                                className="btn" 
-                                style={{ 
-                                  padding: '0.5rem 0.5rem', 
-                                  fontSize: '0.75rem', 
-                                  background: '#10b981',
-                                  color: 'white',
-                                  border: '1px solid transparent',
-                                  whiteSpace: 'nowrap',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  height: '36px',
-                                  flex: 1
-                                }}
-                                onClick={() => togglePaymentStatus(user.id, false, user.name, 'online')}
-                              >
-                                Online
-                              </button>
-                            </>
-                          )}
-                          <button 
-                            className="btn" 
-                            style={{ 
-                              padding: '0', 
-                              background: 'transparent',
-                              color: '#ef4444',
-                              border: '1px solid rgba(239, 68, 68, 0.5)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '36px',
-                              width: '36px'
-                            }}
-                            title="Delete Registration"
-                            onClick={() => deleteUser(user.id, user.name)}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
+                </thead>
+                <tbody>
+                  {filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                        No registrations found.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  ) : (
+                    filteredUsers.map(user => (
+                      <tr key={user.id}>
+                        <td style={{ fontWeight: '500', color: 'var(--navy-dark)' }}>{user.sapId}</td>
+                        <td style={{ fontWeight: '600' }}>{user.name}</td>
+                        <td style={{ color: 'var(--text-muted)' }}>{user.branch}</td>
+                        <td style={{ color: 'var(--text-muted)' }}>{user.year}</td>
+                        <td>
+                          {user.isPaid ? (
+                            <span className="badge badge-success">Paid {user.paymentMethod ? `(${user.paymentMethod})` : ''}</span>
+                          ) : (
+                            <span className="badge badge-warning">Unpaid</span>
+                          )}
+                        </td>
+                        <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          {user.isPaid && user.markedPaidBy ? user.markedPaidBy : '-'}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                            {user.isPaid ? (
+                              <button 
+                                className="btn" 
+                                style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: '#FEE2E2', color: '#DC2626', border: 'none' }}
+                                onClick={() => togglePaymentStatus(user.id, true, user.name)}
+                              >
+                                Unmark
+                              </button>
+                            ) : (
+                              <>
+                                <button 
+                                  className="btn btn-primary" 
+                                  style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
+                                  onClick={() => togglePaymentStatus(user.id, false, user.name, 'cash')}
+                                >
+                                  Cash
+                                </button>
+                                <button 
+                                  className="btn" 
+                                  style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: '#10B981', color: 'white' }}
+                                  onClick={() => togglePaymentStatus(user.id, false, user.name, 'online')}
+                                >
+                                  Online
+                                </button>
+                              </>
+                            )}
+                            <button 
+                              className="btn" 
+                              style={{ padding: '0.4rem', background: '#FEE2E2', color: '#DC2626', border: '1px solid #FCA5A5' }}
+                              onClick={() => deleteUser(user.id, user.name)}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                        <td><MoreVertical size={16} color="#94A3B8" style={{ cursor: 'pointer' }}/></td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
