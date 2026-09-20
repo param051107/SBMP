@@ -39,20 +39,42 @@ const Register = () => {
   };
 
   return (
-    <div className="split-layout animate-fade-in">
+    <div className="overlay-layout animate-fade-in">
       
-      {/* Left Form Side */}
-      <div className="split-left">
-        <div className="glass-panel" style={{ width: '100%', maxWidth: '480px', padding: '3rem 2.5rem' }}>
+      {/* Top Left Header (Logo) */}
+      <div style={{ position: 'absolute', top: '2rem', left: '2rem', zIndex: 10, display: 'flex', alignItems: 'center', gap: '1rem', color: 'white' }}>
+        <img src="/svkm-logo.png" alt="SVKM Logo" style={{ height: '40px', background: 'white', borderRadius: '50%', padding: '2px' }} />
+        <div style={{ fontWeight: '600', fontSize: '0.9rem', lineHeight: '1.2' }}>
+          Shri Bhagubhai Mafatlal Polytechnic<br/>
+          And College of Engineering
+        </div>
+      </div>
+      
+      {/* Top Right Decorative Text */}
+      <div className="font-serif hidden-mobile" style={{ position: 'absolute', top: '2rem', right: '3rem', zIndex: 10, textAlign: 'right', color: 'white', fontSize: '1.5rem', lineHeight: '1.1', transform: 'rotate(-5deg)' }}>
+        Tradition<br/>
+        <span style={{ color: '#FCD34D' }}>Meets Tomorrow</span>
+      </div>
+
+      {/* Center Left Decorative Text */}
+      <div className="font-serif hidden-mobile" style={{ position: 'absolute', left: '4rem', top: '50%', transform: 'translateY(-50%) rotate(-5deg)', zIndex: 10, color: 'white', fontSize: '3rem', lineHeight: '1.1' }}>
+        Dance<br/>
+        Connect<br/>
+        Celebrate
+      </div>
+
+      {/* Centered Registration Card */}
+      <div className="overlay-content">
+        <div className="glass-panel" style={{ width: '100%', padding: '3rem 2.5rem', background: 'white', borderRadius: '24px' }}>
           
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', marginBottom: '1rem' }}>
-               <img src="/svkm-logo.png" alt="SVKM Logo" style={{ height: '70px', objectFit: 'contain' }} />
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{ color: '#0F52BA', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.15em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <Sparkles size={12} color="#F59E0B" /> NAVRATRI CELEBRATION <Sparkles size={12} color="#F59E0B" />
             </div>
-            <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'var(--navy-dark)' }}>
-              Garba Night <span style={{ color: 'var(--accent)' }}>2026</span>
+            <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: '#0A1128', fontWeight: '800' }}>
+              Garba Night <span style={{ color: '#2563EB' }}>2026</span>
             </h1>
-            <p style={{ color: 'var(--text-muted)' }}>Join the biggest celebration of the year! <Sparkles size={16} style={{ display: 'inline', color: '#F59E0B' }} /></p>
+            <p style={{ color: '#64748B', fontSize: '0.95rem' }}>Join the biggest celebration of the year!</p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -143,31 +165,42 @@ const Register = () => {
               {isLoading ? 'Registering...' : 'Get Pass →'}
             </button>
             
-            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+              <div style={{ height: '1px', background: '#E2E8F0', width: '30px' }}></div>
               Let's celebrate together! 💃 🕺
+              <div style={{ height: '1px', background: '#E2E8F0', width: '30px' }}></div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+               <div className="feature-pill">
+                 <div className="feature-icon-wrapper music">🎵</div>
+                 <div>
+                   <div style={{ fontWeight: '600' }}>Music</div>
+                   <div style={{ fontSize: '0.7rem', color: '#94A3B8' }}>Feel the beats</div>
+                 </div>
+               </div>
+               <div className="feature-pill">
+                 <div className="feature-icon-wrapper dance">👥</div>
+                 <div>
+                   <div style={{ fontWeight: '600' }}>Dance</div>
+                   <div style={{ fontSize: '0.7rem', color: '#94A3B8' }}>Move together</div>
+                 </div>
+               </div>
+               <div className="feature-pill">
+                 <div className="feature-icon-wrapper celebrate">🤍</div>
+                 <div>
+                   <div style={{ fontWeight: '600' }}>Celebrate</div>
+                   <div style={{ fontSize: '0.7rem', color: '#94A3B8' }}>Create memories</div>
+                 </div>
+               </div>
             </div>
           </form>
         </div>
       </div>
 
-      {/* Right Image Side */}
-      <div className="split-right">
-        {/* We use a CSS gradient as fallback if placeholder image is missing */}
-        <div style={{ 
-          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'url(/garba-bg.jpg) no-repeat center center',
-          backgroundSize: 'cover',
-          opacity: 0.9
-        }}></div>
-        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-           <h2 className="font-serif" style={{ fontSize: '4rem', color: 'white', lineHeight: '1.1', textShadow: '0 4px 20px rgba(0,0,0,0.2)', transform: 'rotate(-5deg)' }}>
-             Dance<br/>Connect<br/>Celebrate
-           </h2>
-        </div>
-        
-        <div style={{ position: 'absolute', bottom: '2rem', color: 'white', fontSize: '0.9rem', opacity: 0.9, letterSpacing: '0.05em' }}>
-          SVKM | Tradition • Talent • Together
-        </div>
+      {/* Footer Text */}
+      <div className="footer-nav">
+        CULTURE &nbsp;|&nbsp; COMMUNITY &nbsp;|&nbsp; CELEBRATION
       </div>
 
     </div>
