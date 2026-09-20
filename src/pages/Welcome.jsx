@@ -19,13 +19,7 @@ const Welcome = () => {
             </div>
           </div>
           
-          <div className="v3-nav-links">
-            <a href="#" className="active">Home</a>
-            <a href="#">About</a>
-            <a href="#">Events</a>
-            <a href="#">Contact</a>
-          </div>
-          
+
           <div>
             <button className="v3-btn-gradient" onClick={() => navigate('/register')} style={{ padding: '0.5rem 1.5rem' }}>
               Register Now

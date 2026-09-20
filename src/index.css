@@ -792,7 +792,7 @@ tr:hover td { background: #F8FAFC; }
 
 @media (max-width: 992px) {
   .v3-nav { padding: 1rem 2rem; }
-  .v3-hero { padding: 2rem; }
+  .v3-hero { padding: 2rem; padding-bottom: 10rem; }
   .v3-title-main { font-size: 3.5rem; }
   .v3-title-sub { font-size: 1.5rem; }
   .v3-footer-wave {
