@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Search, CheckCircle, XCircle, Trash2, LogOut } from 'lucide-react';
 
@@ -26,24 +26,22 @@ const Admin = () => {
     navigate('/admin-login');
   };
 
-  const fetchUsers = async () => {
-    try {
-      const q = query(collection(db, "registrations"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
+  useEffect(() => {
+    const q = query(collection(db, "registrations"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const usersData = [];
       querySnapshot.forEach((doc) => {
         usersData.push({ id: doc.id, ...doc.data() });
       });
       setUsers(usersData);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
       setLoading(false);
-    }
-  };
+    }, (error) => {
+      console.error("Error fetching users:", error);
+      setLoading(false);
+    });
 
-  useEffect(() => {
-    fetchUsers();
+    return () => unsubscribe();
   }, []);
 
   const togglePaymentStatus = async (userId, currentStatus, userName) => {
