@@ -155,7 +155,7 @@ const Register = () => {
         {/* We use a CSS gradient as fallback if placeholder image is missing */}
         <div style={{ 
           position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'url(/placeholder-dance.png) no-repeat center center',
+          background: 'url(/garba-bg.jpg) no-repeat center center',
           backgroundSize: 'cover',
           opacity: 0.9
         }}></div>

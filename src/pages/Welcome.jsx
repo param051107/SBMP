@@ -99,11 +99,7 @@ const Welcome = () => {
         </div>
         
         {/* Right Side Illustration Placeholder */}
-        <div style={{ position: 'absolute', right: 0, top: '10%', bottom: 0, width: '50%', background: 'url(/placeholder-garba.png) no-repeat center right', backgroundSize: 'contain', zIndex: 1, opacity: 0.8 }}>
-           {/* If placeholder image doesn't exist, we will use a decorative element here */}
-           <div style={{ position: 'absolute', bottom: '15%', right: '10%', transform: 'rotate(-10deg)' }}>
-              <h3 className="font-serif" style={{ fontSize: '3rem', lineHeight: '1', color: 'white' }}>Dance<br/>Connect<br/>Celebrate</h3>
-           </div>
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '100%', background: 'url(/garba-bg.jpg) no-repeat center center', backgroundSize: 'cover', zIndex: 1, opacity: 0.4 }}>
         </div>
 
       </div>
